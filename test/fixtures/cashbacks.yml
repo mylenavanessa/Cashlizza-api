@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  url: MyString
+  percentage: 9.99
+  product: one
+  store: one
+  company: one
+
+two:
+  url: MyString
+  percentage: 9.99
+  product: two
+  store: two
+  company: two
