@@ -1,53 +1,15 @@
 class Api::V1::CategoriesController < ApplicationController
   respond_to :json
   
-  before_action :set_category, only: [:show, :update, :delete]
+  before_action :set_category, only: [:show]
   before_action :set_categories, only: [:index]
 
   def show 
-    render json: @category
+    respond_to { |format| format.json { render json: @category, status: 200 } }
   end
 
   def index
-    render json: @categories
-  end
-
-  def create
-    @category = Category.new(api_params)
-
-    respond_to do |format|
-      if @category.save
-        format.json { render json: @category, status: :created }
-      else
-        format.json do
-          render json: { errors: @category.errors.full_messages } , status: 403
-        end
-      end
-    end
-  end
-
-  def update
-    respond_to do |format|
-      if @category.update(api_params)
-        format.json { render json: @category, status: :ok }
-      else
-        format.json do
-          render json: { errors: @category.errors.full_messages }, status: 403
-        end
-      end
-    end
-  end
-
-  def destroy
-    respond_to do |format|
-      if @category.destroy
-        format.json { render json: nil, status: :ok }
-      else
-        format.json do
-          render json: { errors: @category.errors.full_messages }, status: 403
-        end
-      end
-    end
+    respond_to { |format| format.json { render json: @categories, status: 200 } }
   end
 
   def set_category
@@ -55,12 +17,20 @@ class Api::V1::CategoriesController < ApplicationController
   end
 
   def set_categories
-    @categories = Category.all
-  end
+    filter = params[:filter] || {}
+    page = params[:page] ? params[:page].to_i : 1
+    limit = 6
+    offset = (page.nil? || page == 1 ? 0 : ((page - 1) * limit)).abs
 
-  def api_params
-    params_list = [:name]
+    unless filter.blank?
+      @categories = QueryFilter.filter_relation(
+        ::Category.joins(products: {product_stores: [:store, cashbacks: :company]}).limit(limit).offset(offset),
+        filter
+      ).group(:id).select('categories.id, categories.name, MAX(cashbacks.percentage) as max_cashback')
 
-    params.permit(params_list)
+    else
+      @categories = Category.select(:id, :name)
+    end
+
   end
 end

@@ -55,11 +55,21 @@ class Api::V1::ProductsController < ApplicationController
   end
 
   def set_products
-    @products = Product.all
+    filter = params[:filter] || {}
+    page = params[:page] ? params[:page].to_i : 1
+    limit = 15
+    offset = (page.nil? || page == 1 ? 0 : ((page - 1) * limit)).abs
+
+    @products = QueryFilter.filter_relation(
+      ::Product.joins(:brand, :category, product_stores: [:store, cashbacks: :company]).limit(limit).offset(offset),
+      filter
+    ).select('products.id, products.name, categories.name as category_name, brands.name as brand_name, 
+              stores.name as store_name, stores.logo as store_logo, companies.name as company_name, 
+              companies.logo as company_logo, cashbacks.url, cashbacks.percentage, product_stores.price')
   end
 
   def api_params
-    params_list = [:name]
+    params_list = [:name, :filter]
 
     params.permit(params_list)
   end

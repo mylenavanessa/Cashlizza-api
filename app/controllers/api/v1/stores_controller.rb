@@ -55,7 +55,15 @@ class Api::V1::StoresController < ApplicationController
   end
 
   def set_stores
-    @stores = Store.all
+    filter = params[:filter] || {}
+    page = params[:page] ? params[:page].to_i : 1
+    limit = 6
+    offset = (page.nil? || page == 1 ? 0 : ((page - 1) * limit)).abs
+
+    @stores = QueryFilter.filter_relation(
+      ::Store.joins(product_stores: [product: :category, cashbacks: :company]).limit(limit).offset(offset),
+      filter
+    ).group(:id).select('stores.id, stores.name, stores.logo, stores.description, MAX(cashbacks.percentage) as max_cashback')
   end
 
   def api_params
