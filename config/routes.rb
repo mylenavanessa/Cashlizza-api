@@ -3,12 +3,12 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :brands, only: [:index, :show, :create, :update, :destroy]
-      resources :cashbacks, only: [:index, :show, :create, :update, :destroy]
-      resources :categories, only: [:index, :show, :create, :update, :destroy]
-      resources :companies, only: [:index, :show, :create, :update, :destroy]
-      resources :products, only: [:index, :show, :create, :update, :destroy]
-      resources :stores, only: [:index, :show, :create, :update, :destroy]
+      resources :brands, only: [:index, :show]
+      resources :cashbacks, only: [:index, :show]
+      resources :categories, only: [:index, :show]
+      resources :companies, only: [:index, :show]
+      resources :products, only: [:index, :show]
+      resources :stores, only: [:index, :show]
     end
   end
 end

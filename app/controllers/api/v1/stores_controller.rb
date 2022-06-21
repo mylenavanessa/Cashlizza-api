@@ -57,7 +57,7 @@ class Api::V1::StoresController < ApplicationController
   def set_stores
     filter = params[:filter] || {}
     page = params[:page] ? params[:page].to_i : 1
-    limit = 6
+    limit = 9
     offset = (page.nil? || page == 1 ? 0 : ((page - 1) * limit)).abs
 
     @stores = QueryFilter.filter_relation(

@@ -63,7 +63,7 @@ class Api::V1::CompaniesController < ApplicationController
     @companies = QueryFilter.filter_relation(
       ::Company.joins(cashbacks: {product_store: [:store, product: :category]}).limit(limit).offset(offset),
       filter
-    ).group(:id).select('companies.id, companies.logo as company_logo, MAX(cashbacks.percentage)')
+    ).group(:id).select('companies.id, companies.logo as company_logo, MAX(cashbacks.percentage) as max_cashback')
   end
 
   def api_params
